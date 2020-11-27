@@ -23,7 +23,7 @@ class Encryptor():
         with open(key_name, 'wb') as mykey:
             mykey.write(self.key)
     
-    def load_key(self, key_name):
+    def import_key(self, key_name):
         with open(key_name, 'rb') as mykey:
             self.key = mykey.read()
         return self.key
@@ -62,18 +62,25 @@ class Encryptor():
                         
     def generate_random_salt(self):
         self.salt = os.urandom(16)
+        return self.salt
         
     def write_salt(self, salt_name):
         with open(salt_name, 'wb') as mysalt:
             mysalt.write(self.salt)
     
-    def load_salt(self, salt_name):
+    def import_salt(self, salt_name):
         with open(salt_name, 'wb') as mysalt:
             self.salt = mysalt.read()
+    
+    def load_salt(self, key):
+        self.key = key
         
-    def generate_key_with_password_and_salt(self, password, salt=self.salt):
+    def generate_key_with_password_and_salt(self, password, salt=None):
         if salt == None:
-            self.generate_random_salt()
+            if self.salt == None:
+                self.generate_random_salt()
+            
+            salt = self.salt
         
         # We need a bytes-type password, not a string
         password = bytes(password, 'utf-8') 
